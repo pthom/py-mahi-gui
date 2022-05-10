@@ -11,3 +11,5 @@ wheelhouse/
 .idea/
 .vscode/
 .gdb_history
+
+venv/
