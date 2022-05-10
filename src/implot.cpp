@@ -509,20 +509,25 @@ void py_init_module_implot(py::module& m) {
                      "times will be formatted using a 24 hour clock");
 
   // TODO ImPlotInputMap is not available for now.
-
-  m.def("begin_plot", &ImPlot::BeginPlot, py::arg("title_id"),
-        py::arg("x_label") = nullptr, py::arg("y_label") = nullptr,
-        py::arg("size") = ImVec2(-1, 0), py::arg("flags") = ImPlotFlags_None,
+  m.def("begin_plot", &ImPlot::BeginPlot,
+        py::arg("title_id"),
+        py::arg("x_label") = nullptr,
+        py::arg("y_label") = nullptr,
+        py::arg("size") = ImVec2(-1, 0),
+        py::arg("flags") = ImPlotFlags_None,
         py::arg("x_flags") = ImPlotAxisFlags_None,
         py::arg("y_flags") = ImPlotAxisFlags_None,
         py::arg("y2_flags") = ImPlotAxisFlags_NoGridLines,
         py::arg("y3_flags") = ImPlotAxisFlags_NoGridLines,
-        "Starts a 2D plotting context. If this function returns true, "
-        "EndPlot() must be called, e.g. \"if (BeginPlot(...)) { ... EndPlot(); "
-        "}\". #title_id must be unique. If you need to avoid ID collisions or "
-        "don't want to display a title in the plot, use double hashes (e.g. "
-        "\"MyPlot##Hidden\" or \"##NoTitle\"). If #x_label and/or #y_label are "
-        "provided, axes labels will be displayed.");
+        py::arg("y2_label") = nullptr,
+        py::arg("y3_label") = nullptr,
+        R"(
+Starts a 2D plotting context. If this function returns true, EndPlot() must
+be called, e.g. "if (BeginPlot(...)) { ... EndPlot(); }". #title_id must
+be unique. If you need to avoid ID collisions or don't want to display a
+title in the plot, use double hashes (e.g. "MyPlot##Hidden" or "##NoTitle").
+If #x_label and/or #y_label are provided, axes labels will be displayed.
+)");
   m.def("end_plot", &ImPlot::EndPlot,
         "Only call EndPlot() if BeginPlot() returns true! Typically called at "
         "the end of an if statement conditioned on BeginPlot().");
@@ -929,12 +934,25 @@ void py_init_module_implot(py::module& m) {
   m.def("is_legend_entry_hovered", &ImPlot::IsLegendEntryHovered,
         py::arg("label_id"),
         "Returns true if a plot item legend entry is hovered.");
-  m.def("begin_legend_drag_drop_source", &ImPlot::BeginLegendDragDropSource,
-        py::arg("label_id"), py::arg("flags") = ImGuiDragDropFlags(0),
-        "Begin a drag and drop source from a legend entry. The only supported "
-        "flag is SourceNoPreviewTooltip");
-  m.def("end_legend_drag_drop_source", &ImPlot::EndLegendDragDropSource,
-        "End legend drag and drop source.");
+
+    m.def("begin_drag_drop_source", &ImPlot::BeginDragDropSource,
+        py::arg("key_mods") = ImGuiKeyModFlags_Ctrl, py::arg("flags") = ImGuiDragDropFlags(0),
+        "Turns the current plot's plotting area into a drag and drop source. Don't forget to call end_drap_drop_source!");
+    m.def("begin_drag_drop_source_x", &ImPlot::BeginDragDropSourceX,
+          py::arg("key_mods") = ImGuiKeyModFlags_Ctrl, py::arg("flags") = ImGuiDragDropFlags(0),
+          "Turns the current plot's X-axis into a drag and drop source. Don't forget to call end_drap_drop_source!");
+    m.def("begin_drag_drop_source_y", &ImPlot::BeginDragDropSourceY,
+          py::arg("axis") = ImPlotYAxis_1,
+          py::arg("key_mods") = ImGuiKeyModFlags_Ctrl,
+          py::arg("flags") = ImGuiDragDropFlags(0),
+          "Turns the current plot's Y-axis into a drag and drop source. Don't forget to call end_drap_drop_source!");
+    m.def("begin_drag_drop_source_item", &ImPlot::BeginDragDropSourceItem,
+          py::arg("label_id") = "",
+          py::arg("flags") = ImGuiDragDropFlags(0),
+          "Turns an item in the current plot's legend into drag and drop source. Don't forget to call end_drap_drop_source!");
+    m.def("end_drag_drop_source", &ImPlot::EndDragDropSource,
+          "Ends a drag and drop source (currently just an alias for ImGui::end_drap_drop_source)");
+
   m.def("begin_legend_popup", &ImPlot::BeginLegendPopup, py::arg("label_id"),
         py::arg("mouse_button") = ImGuiMouseButton(1),
         "Begin a popup for a legend entry.");

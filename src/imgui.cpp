@@ -615,6 +615,13 @@ void py_init_module_imgui_enums(py::module& m) {
       .value("NoNav ", ImGuiWindowFlags_NoNav)
       .value("NoDecoration", ImGuiWindowFlags_NoDecoration)
       .value("NoInputs", ImGuiWindowFlags_NoInputs);
+
+    py::enum_<ImGuiKeyModFlags_>(m, "ImGuiKeyModFlags_", py::arithmetic())
+        .value("None", ImGuiKeyModFlags_None)
+        .value("Ctrl", ImGuiKeyModFlags_Ctrl)
+        .value("Shift", ImGuiKeyModFlags_Shift)
+        .value("Alt", ImGuiKeyModFlags_Alt)
+        .value("Super", ImGuiKeyModFlags_Super);
 }
 
 void py_init_module_imgui_classes(py::module& m) {
